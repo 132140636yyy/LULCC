@@ -1,4 +1,4 @@
-###This repository hosts the main code for generating the results for “Shifts in Local Water Availability due to Land Use and Land Cover Change based on Past 29 years Observation Data”.
+This repository hosts the main code for generating the results for “Shifts in Local Water Availability due to Land Use and Land Cover Change based on Past 29 years Observation Data”.
 
 There are three folders under this repository:<br>
 1.Input datasets for the procedures.<br>
