@@ -271,12 +271,14 @@ for i in range(0,len(lat_x)):
 data_Z = np.where(data_Z == 0 ,np.nan,data_Z)
 #%% spatial distribution and fractions of main LULCC classes
 def group12_plot(x,tick_label):
+  # cmap_use = plt.get_cmap("jet")
   cmap_use = cm.get_cmap('Paired_r',11)
-  fig = plt.figure(dpi = 600,figsize=(12,3))
-  ax1 = fig.add_subplot(1,2,1,projection=ccrs.PlateCarree())
+  fig = plt.figure(dpi = 600,figsize=(10,7))
+  # ax1 = fig.add_subplot(1,2,1,projection=ccrs.PlateCarree())
+  ax1 = fig.add_axes([0.1,0.1,0.8,0.8],projection=ccrs.PlateCarree())
   gl = ax1.gridlines(crs=ccrs.PlateCarree(), draw_labels=True,
                   linewidth=1, color='gray', alpha=0, linestyle='-.')
-  ax1.coastlines(alpha=1.,linestyle='-',color = "black",lw=0.5)
+  ax1.coastlines(alpha=1.,linestyle='-',color = "black",lw=0.7)
   gl.xlabels_top = False
   gl.ylabels_right = False
   gl.xlocator = mticker.FixedLocator([-180, -120, -60, 0, 60, 120, 180])
@@ -289,53 +291,62 @@ def group12_plot(x,tick_label):
   lat_formatter = LatitudeFormatter()
   ax1.xaxis.set_major_formatter(lon_formatter)
   ax1.yaxis.set_major_formatter(lat_formatter)
-  ax1.set_title('a',loc='left',fontdict=font_title)
-  bounds = np.linspace(1,len(lat_x)+1,len(lat_x)+1)
-  level = np.linspace(1,len(lat_x)+1,len(lat_x)+1)
-  tick = np.linspace(1.5,len(lat_x)+0.5,len(lat_x))
-  norms = BoundaryNorm(boundaries=bounds,ncolors = cmap_use.N)
-  con_plot = ax1.pcolormesh(lon_lcc,lat_lcc,data_Z,zorder=0,transform=ccrs.PlateCarree(),norm = norms,cmap = cmap_use)
-  cb = plt.colorbar(con_plot,fraction = 0.08,pad = 0.12,label = 'LULCC Class', orientation="horizontal",norm=norms , cmap=cmap_use,ticks=tick)
-  cb.ax.set_xticklabels(tick_label,fontsize=11)
+  lcc_per = lcc_num/data_num*100
+  tick = np.linspace(1.5,11.5,11)
+  ax1.set_extent([-179.75, 179.75, -89.75, 89.75], ccrs.PlateCarree())
+  where_x1 = np.array(np.where(~np.isnan(data_Z)))[1]
+  where_y1 = np.array(np.where(~np.isnan(data_Z)))[0]
+  x1 = lon_lcc[where_x1]
+  y1 = lat_lcc[where_y1]
+  con_plot = ax1.scatter(x1,y1,c=data_Z[where_y1,where_x1],transform=ccrs.PlateCarree(),cmap = cmap_use,s=0.3)
+  cb = plt.colorbar(con_plot,fraction = 0.05,pad = 0.08,label = 'LULCC Class',orientation="horizontal",boundaries=np.linspace(1,12,12), cmap=cmap_use,ticks=tick)
+  cb.ax.set_xticklabels(tick_label,fontsize=12)
+
   tab20 = cm.get_cmap('Paired_r',11)
   colors = tab20(np.linspace(0, 1, 11))
-  width = 0.4
-  ax2 = fig.add_subplot(1,2,2)
+  width = 0.3
+  ax2 = fig.add_axes([0.58,0.26,0.2,0.1])
+  ax2.spines['right'].set_visible(False)
+  ax2.spines['top'].set_visible(False)
   ax2.bar(x,rate, width,color = colors,edgecolor="gray")
-  ax2.set_xticks(x, labels,fontsize=11)
+  ax2.set_xticks(x, labels,fontsize=9.4,rotation=305)
   ax2.set_ylim(0,max(rate)+2)
-  ax2.set_title('b',loc='left',fontdict=font_title)
-  ax2.set_xlabel('LULCC Class',fontsize=12)
-  ax2.set_ylabel('Fractions of Each Class (%)',fontsize=12)
-  lcc_per = lcc_num/data_num*100
-  text_str = 'Dramatic Changed Grids \n  %.2f%%' %(lcc_per)
-  ax2.text(2.5,24,text_str,fontdict=font_tick)
+  # ax2.grid(linestyle='-.',alpha=.5)
+  ax2.set_title('Fractions (%)',fontdict=font_label)
   formatter = mpl.ticker.FormatStrFormatter('%d%%')
   Axis.set_major_formatter(ax2.yaxis, formatter)
   plt.rcParams['font.size'] = 12
   plt.rc('font',family='Times New Roman')
-  plt.show()
+
+  ax3 = fig.add_axes([0.15,0.22,0.15,0.15])
+  ax3.pie(x=[lcc_per,100-lcc_per],colors=['#FF4500','#DCDCDC'])
+  ax1.arrow(-85,-58,75,0, length_includes_head=False,head_width=2.5, fc='grey', ec='k')
+  text_str = ' %.2f%%' %(lcc_per)
+  text_lcc = ' %.2f%%' %(rate[4])
+  font_small = {'family':'Times New Roman','weight':'heavy','size':10}
+  ax1.text(-175,-70,'Unchanged',fontdict=font_small)
+  ax1.text(-108,-40,'Changed',fontdict=font_small)
+  ax1.text(-108,-33,text_str,fontdict=font_small)
+  ax2.text(2.2,24,text_lcc,fontdict=font_small)
   return colors,con_plot
+
 tick_label = text_word
 labels = text_word
 def nums_statis():
-  nums = list()
-  rate = list()
+  nums = np.zeros(len(lat_x))
   for i in range(0,len(lat_x)):
     lat_each = lat_x[i]
     nums_each = len(lat_each)
     lat_each = lat_lcc[lat_x[i]]
     m = np.cos(np.deg2rad(lat_each))
-    nums_each = np.nansum(m)
-    nums = nums + [nums_each]
+    nums[i] = np.nansum(m)
   num_all = sum(nums)
   print(num_all)
-  for i in range(0,len(lat_x)):
-    lat_each = lat_x[i]
-    nums_each = len(lat_each)
-    rate_each = nums_each/num_all*100
-    rate = rate + [rate_each]
+  rate = nums/num_all*100
   return rate
 rate = nums_statis()
 x = np.arange(len(labels))/2  # the label locations
 colors,con_plot = group12_plot(x,text_word)
+plt.show()
+# plt.savefig('E:/paper/LULCC_impact/plot/Figure2.pdf',dpi=600)
+# plt.close()
