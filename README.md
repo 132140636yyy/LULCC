@@ -3,4 +3,4 @@ This repository hosts the main code for generating the results for “Shifts in 
 There are three folders under this repository:<br>
 1.Input datasets in releases.<br>
 2.LULCC_class.py presents the procedure for the definition of LULCC classes based on CCI satellite dataset. <br>
-3.ST_APPR presents the space-for-time approximation method for isolating the LULCC impacts on precipitation and evapotranspiration.
+3.Improve_approximation_method.py presents the space-for-time approximation method for isolating the LULCC impacts on precipitation and evapotranspiration.
