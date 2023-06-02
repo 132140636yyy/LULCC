@@ -9,5 +9,7 @@ There are three folders under this repository:<br>
 (5) WA_LULCC_change.nc for changes in water availability that only caused by LULCC impacts (Data for Fig.4a). <br>
 (6) WA_all_change.nc for changes in water availability that caused by total impacts (Data for Fig.4b). <br>
 (7) LULCC_weight.nc for the weight of LULCC factor in water availability variations (Data for Fig.4c). <br>
+<br>
 2.LULCC_class.py presents the procedure for the definition of LULCC classes based on CCI satellite dataset. <br>
+<br>
 3.Improve_approximation_method.py presents the space-for-time approximation method for isolating the LULCC impacts on precipitation and evapotranspiration.
